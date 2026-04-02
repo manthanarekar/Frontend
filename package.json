@@ -1,0 +1,12 @@
+{
+  "name": "wati-alternative-frontend",
+  "version": "1.0.0",
+  "description": "WhatsApp sender desktop app - human-mode, no official API",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^30.0.0"
+  }
+}
