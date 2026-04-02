@@ -2,9 +2,11 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path   = require('path');
 const { spawn, execSync } = require('child_process');
 const http   = require('http');
+const https  = require('https');
 const fs     = require('fs');
 
 const API_PORT    = 12345;
+const API_HEALTH_URL = 'https://server-2aeo.onrender.com/health';
 let mainWindow    = null;
 let serverProcess = null;
 
@@ -67,7 +69,7 @@ function startServer() {
 
 // ── Poll /health until the server responds ────────────────────────────────
 function waitForAPI(retries = 40) {
-  const req = http.get(`https://server-2aeo.onrender.com/health`, res => {
+  const req = requestHealthCheck(res => {
     if (res.statusCode === 200) {
       console.log('[main] Server is ready');
       if (mainWindow && !mainWindow.isDestroyed())
@@ -117,13 +119,19 @@ ipcMain.on('open-external', (_e, url) => shell.openExternal(url));
 // ── Check if server is already running on the port ───────────────────────
 function isServerRunning() {
   return new Promise(resolve => {
-    const req = http.get(`https://server-2aeo.onrender.com/health`, res => {
+    const req = requestHealthCheck(res => {
       resolve(res.statusCode === 200);
       res.resume();
     });
     req.on('error', () => resolve(false));
     req.setTimeout(1000, () => { req.destroy(); resolve(false); });
   });
+}
+
+function requestHealthCheck(onResponse) {
+  const url = new URL(API_HEALTH_URL);
+  const transport = url.protocol === 'https:' ? https : http;
+  return transport.get(url, onResponse);
 }
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -139,6 +147,8 @@ app.whenReady().then(async () => {
     startServer();
     setTimeout(waitForAPI, 1500);
   }
+}).catch(err => {
+  console.error('[main] Failed during app startup', err);
 });
 
 function killServer() {
