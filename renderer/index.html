@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://server-2aeo.onrender.com; img-src 'self' data:" />
+  <title>WatiAlternative</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ═══ SPLASH / LOADING SCREEN ═══════════════════════════════════════ -->
+  <div id="splash" class="splash">
+    <div class="splash-card">
+      <div class="splash-logo">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <rect width="56" height="56" rx="16" fill="#00a884"/>
+          <path d="M28 10C18.06 10 10 18.06 10 28c0 3.18.84 6.16 2.3 8.74L10 46l9.52-2.26A17.9 17.9 0 0028 46c9.94 0 18-8.06 18-18S37.94 10 28 10zm9.4 24.92c-.4 1.12-2.32 2.14-3.2 2.28-.82.12-1.86.18-3-.96a37.9 37.9 0 01-2.9-2.7c-2.48-2.78-3.96-6.18-4.08-6.46-.12-.28-.96-2.56.22-4.36.4-.6.88-.9 1.18-.96.3-.06.6-.08.86-.08.26 0 .54 0 .78.006.26.006.6-.1.94.72.36.84 1.22 2.98 1.32 3.2.1.22.18.48.04.76-.14.28-.22.46-.42.7-.2.26-.42.58-.6.78-.2.2-.4.42-.18.82.22.4 1 1.64 2.14 2.66 1.48 1.32 2.72 1.72 3.12 1.92.4.2.64.16.88-.1.24-.26 1-1.16 1.26-1.56.26-.4.52-.34.88-.2.36.14 2.28 1.08 2.68 1.28.4.2.66.3.76.46.1.16.1.9-.3 2.02z" fill="white"/>
+        </svg>
+      </div>
+      <h1 class="splash-title">WatiAlternative</h1>
+      <p class="splash-sub" id="splash-msg">Starting API server…</p>
+      <div class="splash-spinner"></div>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN APP (hidden until API ready) ══════════════════════════════ -->
+  <div id="app" class="app hidden">
+
+    <!-- ── SIDEBAR ─────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <svg width="28" height="28" viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="14" fill="#00a884"/>
+            <path d="M28 10C18.06 10 10 18.06 10 28c0 3.18.84 6.16 2.3 8.74L10 46l9.52-2.26A17.9 17.9 0 0028 46c9.94 0 18-8.06 18-18S37.94 10 28 10zm9.4 24.92c-.4 1.12-2.32 2.14-3.2 2.28-.82.12-1.86.18-3-.96a37.9 37.9 0 01-2.9-2.7c-2.48-2.78-3.96-6.18-4.08-6.46-.12-.28-.96-2.56.22-4.36.4-.6.88-.9 1.18-.96.3-.06.6-.08.86-.08.26 0 .54 0 .78.006.26.006.6-.1.94.72.36.84 1.22 2.98 1.32 3.2.1.22.18.48.04.76-.14.28-.22.46-.42.7-.2.26-.42.58-.6.78-.2.2-.4.42-.18.82.22.4 1 1.64 2.14 2.66 1.48 1.32 2.72 1.72 3.12 1.92.4.2.64.16.88-.1.24-.26 1-1.16 1.26-1.56.26-.4.52-.34.88-.2.36.14 2.28 1.08 2.68 1.28.4.2.66.3.76.46.1.16.1.9-.3 2.02z" fill="white"/>
+          </svg>
+          <span>WatiAlt</span>
+        </div>
+        <button id="btn-new-session" class="icon-btn" title="New Session">
+          <!-- plus icon -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="sidebar-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667781" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="search-input" type="text" placeholder="Search sessions…" />
+      </div>
+
+      <div class="sessions-label">SESSIONS</div>
+
+      <div id="sessions-list" class="sessions-list">
+        <!-- injected by app.js -->
+        <div class="empty-sessions" id="empty-sessions">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#b0b8c1" stroke-width="1.5">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+          <p>No sessions yet</p>
+          <button id="btn-empty-new">Create one</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN PANEL ──────────────────────────────────────────────────── -->
+    <main class="main">
+
+      <!-- Welcome (no session selected) -->
+      <div id="welcome" class="welcome">
+        <div class="welcome-inner">
+          <svg width="72" height="72" viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="28" fill="#e8f5e9"/>
+            <path d="M28 14C20.27 14 14 20.27 14 28c0 2.54.67 4.93 1.84 6.99L14 42l7.22-1.8A13.93 13.93 0 0028 42c7.73 0 14-6.27 14-14s-6.27-14-14-14zm6.58 19c-.32.9-1.86 1.72-2.56 1.84-.66.1-1.5.14-2.42-.78a30.3 30.3 0 01-2.32-2.16c-1.98-2.22-3.16-4.94-3.26-5.16-.1-.22-.76-2.05.18-3.49.32-.48.7-.72.94-.76.24-.05.48-.06.7-.06.2 0 .42 0 .62.005.2.005.48-.08.74.58.28.66.98 2.38 1.06 2.56.08.18.14.38.02.6-.1.22-.18.36-.34.56-.16.2-.34.46-.48.62-.16.16-.32.34-.14.66.18.32.8 1.3 1.7 2.12 1.18 1.06 2.18 1.38 2.5 1.54.32.16.5.12.7-.1.2-.2.8-.92 1.02-1.24.2-.32.4-.28.7-.16.28.12 1.82.86 2.14 1.02.32.16.52.24.6.36.08.14.08.72-.22 1.62z" fill="#00a884"/>
+          </svg>
+          <h2>WatiAlternative</h2>
+          <p>Select a session from the sidebar, or create a new one to start sending messages.</p>
+          <button class="btn-primary" id="btn-welcome-new">New Session</button>
+        </div>
+      </div>
+
+      <!-- Chat Panel (session selected) -->
+      <div id="chat-panel" class="chat-panel hidden">
+        <!-- header -->
+        <div class="chat-header">
+          <div class="chat-avatar" id="chat-avatar">A</div>
+          <div class="chat-header-info">
+            <div class="chat-account-name" id="chat-account-name">Account</div>
+            <div class="chat-status-row">
+              <span class="status-dot" id="chat-status-dot"></span>
+              <span class="chat-status-text" id="chat-status-text">Ready</span>
+            </div>
+          </div>
+          <div class="chat-header-actions">
+            <button class="icon-btn danger" id="btn-close-session" title="Close Session">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- QR panel (shown when status = waiting_qr) -->
+        <div id="qr-panel" class="qr-panel hidden">
+          <div class="qr-inner">
+            <div class="qr-heading">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <line x1="14" y1="14" x2="14" y2="14.01"/><line x1="18" y1="14" x2="18" y2="14.01"/>
+                <line x1="21" y1="14" x2="21" y2="17"/><line x1="14" y1="17" x2="17" y2="17"/>
+                <line x1="17" y1="21" x2="21" y2="21"/><line x1="21" y1="18" x2="21" y2="21"/>
+              </svg>
+              Scan with WhatsApp to connect
+            </div>
+            <div id="qr-img-wrap" class="qr-img-wrap">
+              <div class="qr-spinner"></div>
+            </div>
+            <p class="qr-hint">Open WhatsApp on your phone → Settings → Linked Devices → Link a Device</p>
+          </div>
+        </div>
+
+        <!-- message log -->
+        <div id="message-log" class="message-log"></div>
+
+        <!-- compose -->
+        <div class="compose" id="compose-area">
+          <div class="compose-fields">
+            <div class="field-group">
+              <label class="field-label">To</label>
+              <input id="to-input" class="field-input" type="tel"
+                     placeholder="+1 415 555 0100  (include country code)" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Message</label>
+              <textarea id="msg-input" class="field-textarea" rows="3"
+                        placeholder="Type your message…"></textarea>
+            </div>
+          </div>
+          <div class="compose-footer">
+            <div id="cooldown-wrap" class="cooldown-wrap hidden">
+              <div class="cooldown-track">
+                <div id="cooldown-fill" class="cooldown-fill"></div>
+              </div>
+              <span id="cooldown-label" class="cooldown-label">3s</span>
+            </div>
+            <button id="send-btn" class="btn-send">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══ NEW SESSION MODAL ═══════════════════════════════════════════════ -->
+  <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>New Session</h3>
+        <button class="icon-btn" id="btn-modal-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="field-label" for="account-input">Account Label</label>
+        <input id="account-input" class="field-input" type="text"
+               placeholder="e.g. personal, work-account" autocomplete="off" />
+        <p class="hint">A unique name for this WhatsApp account. A Chrome window will open — scan the QR once and you're set.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="btn-modal-cancel">Cancel</button>
+        <button class="btn-primary"   id="btn-modal-create">Start Session</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TOAST CONTAINER ══════════════════════════════════════════════════ -->
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
